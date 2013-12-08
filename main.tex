@@ -5,10 +5,15 @@
 \usepackage{graphics}   % for pdf, bitmapped graphics files
 \usepackage{epsfig}     % for postscript graphics files
 \usepackage[font=footnotesize]{caption}
+\usepackage[square]{natbib}
+\newcommand{\newblock}{} % hack to make natbib work with beamer
+\usepackage{textpos}
 
 % Custom Commands
 \newcommand{\sVec}[1]{\begin{bmatrix} #1 \end{bmatrix}}
 \newcommand{\hl}[1]{ {\color{red} #1} }
+\newcommand{\mycite}[1]{ {\color{gray} \citep{#1}} }
+
 
 % Variable definitions
 \newcommand{\rot}{\boldsymbol\omega}
@@ -36,22 +41,45 @@
 
 \begin{frame}[plain]
   \titlepage
+  \begin{textblock*}{3cm}(0cm,-7.5cm)
+  \includegraphics[width=\textwidth]{img/rpg.png}
+\end{textblock*}
 \end{frame}
 
-\begin{frame}{Feature-based Visual Odometry}
+\begin{frame}{Monocular Visual Odometry}
 	\begin{columns}
 	  \begin{column}{0.4\textwidth}
 	  	\begin{block}{Goal}
-	  		\emph{Estimate relative pose $\T_{k,k-1}$ of new frame w.r.t. previous frame.}
-	  	\end{block}
-	  	\begin{block}{Pipeline}
-		  	\begin{enumerate}
-				\item Feature selection
-				\item Feature matching 
-				\item Pose estimation
-				\item Pose refinement
-				\item Triangulation
-			\end{enumerate}
+	  		Estimate the egomotion of the Micro Aerial Vehicle (MAV) using only a single camera.
+	  		\begin{itemize}
+	  			\item Lightweight
+	  			\item Low power consumption
+	  			\item Moving platform: Stereo vision not necessary
+	  		\end{itemize}
+		\end{block}
+		\begin{block}{``Visual Odometry''}
+			\emph{Incrementally estimate the pose of the vehicle by examining the changes that motion induces on the images.}
+		\end{block}
+	  \end{column}
+	  \begin{column}{0.6\textwidth}
+	    \includegraphics[width=\textwidth]{img/nano}
+	  \end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{Visual Odometry}
+	\begin{columns}
+	  \begin{column}{0.4\textwidth}
+	  	\begin{block}{Problem Formulation}
+	  		Two camera poses at adjacent time instants $k-1$ and $k$ are related by the rigid body transformation
+	  		\[
+				\T_{k,k-1} = \sVec{\mathbf{R} & \mathbf{t} \\ 0 & 0} \in SE(3).
+	  		\]
+	  		Concatenation of the relative transformations allows to recover the path:
+	  		\[
+	  			\T_{k,0} = \T_{k,k-1} \cdot \T_{k-1, k-2} \cdots \T_{1, 0}
+	  		\]
+
 		\end{block}
 	  \end{column}
 	  \begin{column}{0.6\textwidth}
@@ -97,16 +125,22 @@
 				\item Triangulation
 			\end{enumerate}
 		\end{block}
-		\begin{block}{Matching Strategies}
-			\begin{itemize}
-				\item Fast: SSD/NCC over small patch
-				\item Robust: Match invariant feature descriptors
-			\end{itemize}
-		\end{block}
 	  \end{column}
 	  \begin{column}{0.6\textwidth}
 	    \includegraphics[width=\textwidth]{img/vo_pipeline_4}
 	  \end{column}
+	\end{columns}
+	\begin{columns}
+		\begin{column}{0.6\textwidth}
+			\begin{block}{Matching Strategies}
+				\begin{itemize}
+					\item Fast: SSD/NCC over small patch
+					\item Robust: Match invariant feature descriptors, e.g., SIFT \mycite{Lowe2003SIFT}
+				\end{itemize}
+			\end{block}
+		\end{column}
+		\begin{column}{0.4\textwidth}
+		\end{column}
 	\end{columns}
 \end{frame}
 
@@ -122,13 +156,20 @@
 				\item Triangulation
 			\end{enumerate}
 		\end{block}
-		\begin{block}{Epipolar Geometry}
-			Three 3D point to 2D feature correspondences are necessary to estimate the 3D camera pose.
-		\end{block}
 	  \end{column}
 	  \begin{column}{0.6\textwidth}
 	    \includegraphics[width=\textwidth]{img/vo_pipeline_5}
 	  \end{column}
+	\end{columns}
+	\begin{columns}
+		\begin{column}{0.6\textwidth}
+			\begin{block}{Epipolar Geometry}
+				Three 3D point to 2D feature correspondences are necessary to estimate the 3D camera pose.
+				\mycite{Kneip2011P3P}
+			\end{block}
+		\end{column}
+		\begin{column}{0.4\textwidth}
+		\end{column}
 	\end{columns}
 \end{frame}
 
@@ -144,20 +185,24 @@
 				\item Triangulation
 			\end{enumerate}
 		\end{block}
-		\begin{block}{Minimize reprojection errors}
-			\[
-				\begin{aligned}
-  				\T_{k,k-1} &= \\
-  				       \arg&\min_{\T} \frac{1}{2} \sum_{i} \parallel \bu_i - \pi(\T \ _{k-1}\bp_i) \parallel^2.
-  				\end{aligned}
-			\]
-			Can be solved with Gauss Newton.
-		\end{block}
+		
 	  \end{column}
 	  \begin{column}{0.6\textwidth}
 	    \includegraphics[width=\textwidth]{img/vo_pipeline_6}
 	  \end{column}
 	\end{columns}
+	\begin{columns}
+		\begin{column}{0.9\textwidth}
+			\begin{block}{Minimize reprojection errors}
+				\[
+					\T_{k,k-1} = \arg\min_{\T} \sum_{i} \rho \big[ e_i(\T) \big], \qquad \text{typically } \ \rho\big[.\big] \hat{=} \frac{1}{2\sigma^2} \parallel.\parallel^2
+				\]
+				Can be solved with e.g. Gauss Newton.
+			\end{block}
+		\end{column}
+		\begin{column}{0.1\textwidth}
+		\end{column}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{Feature-based Visual Odometry}
@@ -204,28 +249,57 @@
 	\end{columns}
 \end{frame}
 
-%----------- slide --------------------------------------------------%
-\begin{frame}{Dense Tracking}
-\[
-  \T_{k,k-1} = \arg\min_\T \iint_{\bar{\mathcal{R}}} \rho\Big[ \delta \I\big(\T, \bu\big) \Big] d\bu.
-\]
-\[
-  \delta \I\big(\T, \bu\big)
-   = \I_k\Big(\pi\big(\T \cdot \pi^{-1}(\bu, z_\bu)\big)\Big) - \I_{k-1}(\bu) 
-   \quad \forall \ \bu \in \bar{\mathcal{R}},
-\]
+\begin{frame}{Implementation Details}
+	\begin{itemize}
+		\item Make more robust by using many (hundreds) of features.
+		\item Use motion model to speed-up feature matching.
+		\item Use robust estimation techniques to handle wrong matches (e.g., RANSAC \mycite{FischlerBolles1981}).
+		\item Minimize drift through incremental Bundle Adjustment: Joint optimization of frames and 3D points \mycite{Mouragnon2006}.
+		\item Parallelize tracking and mapping \mycite{Klein2009}.
+	\end{itemize}
+\end{frame}
 
-\begin{itemize}
-  \item itemized item 1
-  \item itemized item 2
-  \item itemized item 3
-\end{itemize}
+\begin{frame}{The direct approach}
+	\begin{columns}
+	  	\begin{column}{0.5\textwidth}
+	  		\begin{block}{Minimize photometric error}
+			  	\[
+		  			\T_{k,k-1} = \arg\min_\T \iint_{\bar{\mathcal{R}}} \rho\Big[ \delta \I\big(\T, \bu\big) \Big] d\bu.
+				\]
+				where
+				\[ 
+					\begin{aligned}
+				  		\delta \I\big(\T, \bu\big) &= \I_k(\bu') - \I_{k-1}(\bu) \\
+				  		\bu' &= \pi\big(\T \cdot \pi^{-1}(\bu, z_\bu)\big) 
+			   		\end{aligned}
+				\]
+			\end{block}
+		\end{column}
+	    \begin{column}{0.5\textwidth}
+		    \includegraphics[width=\textwidth]{img/sparse_img_alignment}
+		\end{column}
+	\end{columns}
+	\begin{columns}
+		\begin{column}{0.9\textwidth}
+			\begin{block}{Advantages}
+				\begin{itemize}
+					\item No costly feature extraction
+					\item No costly robust feature matching
+				\end{itemize}
+			\end{block}
+		\end{column}
+		\begin{column}{0.1\textwidth}
+		\end{column}
+	\end{columns}	
 
-\begin{theorem}
-  In a right triangle, the square of hypotenuse equals
-  the sum of squares of two other sides.
-\end{theorem}
+		
+	  
+\end{frame}
 
+
+\begin{frame}{Bibliography}
+	\bibliographystyle{apalike}
+	\bibliography{bibliography}
 \end{frame}
 
 \end{document}
