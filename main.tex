@@ -34,32 +34,39 @@
 \institute[RPG]{
   Robotics and Perception Group \\
   Institute for Informatics \\
-  University of Z\"urich
+  University of Zurich
 }
 \date{December 9, 2013}
 \begin{document}
 
 \begin{frame}[plain]
+\begin{textblock*}{3.8cm}(7.5cm, -0.5cm)
+  	\includegraphics[width=\textwidth]{img/uzh_ifi_logo_e_pos}
+	\end{textblock*}
   \titlepage
-  \begin{textblock*}{3cm}(0cm,-7.5cm)
-  \includegraphics[width=\textwidth]{img/rpg.png}
-\end{textblock*}
+
+  \begin{textblock*}{3.5cm}(0cm,-7.5cm)
+  	\includegraphics[width=\textwidth]{img/rpg}
+	\end{textblock*}
+  
+	
 \end{frame}
 
 \begin{frame}{Monocular Visual Odometry}
 	\begin{columns}
 	  \begin{column}{0.4\textwidth}
 	  	\begin{block}{Goal}
-	  		Estimate the egomotion of the Micro Aerial Vehicle (MAV) using only a single camera.
+	  		\vspace{0.2cm}
+	  		Estimate the egomotion of a Micro Aerial Vehicle (MAV) using only a single camera.
 	  		\begin{itemize}
 	  			\item Lightweight
 	  			\item Low power consumption
 	  			\item Moving platform: Stereo vision not necessary
 	  		\end{itemize}
 		\end{block}
-		\begin{block}{``Visual Odometry''}
-			\emph{Incrementally estimate the pose of the vehicle by examining the changes that motion induces on the images.}
-		\end{block}
+		% \begin{block}{``Visual Odometry''}
+		% 	\emph{Incrementally estimate the pose of the vehicle by examining the changes that motion induces on the images.}
+		% \end{block}
 	  \end{column}
 	  \begin{column}{0.6\textwidth}
 	    \includegraphics[width=\textwidth]{img/nano}
@@ -259,6 +266,7 @@
 	\end{itemize}
 \end{frame}
 
+
 \begin{frame}{The direct approach}
 	\begin{columns}
 	  	\begin{column}{0.5\textwidth}
@@ -287,15 +295,31 @@
 					\item No costly robust feature matching
 				\end{itemize}
 			\end{block}
+			\mycite{Forster2014NSLAM}
 		\end{column}
 		\begin{column}{0.1\textwidth}
 		\end{column}
 	\end{columns}	
-
-		
-	  
 \end{frame}
 
+\begin{frame}{Future Challenges}
+	\begin{columns}
+		\begin{column}{0.5\textwidth}
+			\begin{itemize}
+				\item Robust performance in scenes of little, repetitive or high frequency texture.
+				\item Robust tracking under disturbances: Moving objects, changing light conditions.
+				\item Fast relocalization after tracking failure.
+			\end{itemize}
+		\end{column}
+	    \begin{column}{0.5\textwidth}
+		    \includegraphics[width=\textwidth]{img/tracking_performance.png}\\
+		    \footnotesize{\emph{High frequency texture}}\\
+		    \vspace{0.3cm}
+		    \includegraphics[width=\textwidth]{img/no_corners.jpg}\\
+		    \footnotesize{\emph{No corners}}
+		\end{column}
+	\end{columns}	
+\end{frame}
 
 \begin{frame}{Bibliography}
 	\bibliographystyle{apalike}
